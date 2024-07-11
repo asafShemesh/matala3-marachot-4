@@ -4,16 +4,6 @@
 CatanGame::CatanGame(Player& p1, Player& p2, Player& p3)
     : player1(p1), player2(p2), player3(p3), currentPlayer(&p1), currentPlayerIndex(0) {}
 
-void CatanGame::startGame() {
-    std::cout << "Starting game..." << std::endl;
-    // Initial setup if necessary
-}
-
-void CatanGame::playTurn() {
-    std::cout << currentPlayer->getName() << "'s turn." << std::endl;
-    // Game logic for playing a turn
-    nextTurn();
-}
 
 void CatanGame::nextTurn() {
     currentPlayerIndex = (currentPlayerIndex + 1) % 3;
@@ -26,7 +16,7 @@ void CatanGame::nextTurn() {
     }
 }
 
-bool CatanGame::isGameOver() const {
+bool CatanGame::printWinner() const {
     if (player1.getVictoryPoints() >= 10) {
         std::cout << player1.getName() << " wins the game!" << std::endl;
         return true;
@@ -37,6 +27,7 @@ bool CatanGame::isGameOver() const {
         std::cout << player3.getName() << " wins the game!" << std::endl;
         return true;
     }
+    std::cout << " no one won the game yet!" << std::endl;
     return false;
 }
 

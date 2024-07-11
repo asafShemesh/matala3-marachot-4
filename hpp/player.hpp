@@ -20,7 +20,6 @@ public:
     void placeRoad(int start, int end);
 
     void rollDice(); // Added for completeness
-    void endTurn(); // Added for completeness
     void trade(Player& other, const std::string& giveResource, const std::string& takeResource, int giveAmount, int takeAmount);
     void buyDevelopmentCard();
     void useDevelopmentCard(DevCardType cardType);

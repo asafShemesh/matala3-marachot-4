@@ -7,11 +7,10 @@ class CatanGame {
 public:
     Board board;
     CatanGame(Player& player1, Player& player2, Player& player3);
-    void startGame();
-    void playTurn();
-    bool isGameOver() const;
+    bool printWinner() const;
     Player get_turn() const;
     const Board& getBoard() const; // Ensure this returns a const reference
+    void nextTurn();
 
 private:
     Player& player1;
@@ -20,5 +19,4 @@ private:
     Player* currentPlayer;
     int currentPlayerIndex;
 
-    void nextTurn();
 };
