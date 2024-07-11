@@ -5,7 +5,6 @@ Board::Board() {
 }
 
 void Board::createBoard() {
-    // Create plots based on the provided image
     plots = {
         std::make_shared<Plot>("Sheep", 5), std::make_shared<Plot>("Ore", 3),
         std::make_shared<Plot>("Wheat", 3), std::make_shared<Plot>("Wood", 8),
@@ -18,6 +17,8 @@ void Board::createBoard() {
         std::make_shared<Plot>("Brick", 11), std::make_shared<Plot>("Wood", 6),
         std::make_shared<Plot>("Ore", 10)
     };
+
+    houses.fill(nullptr);  // Initialize the houses array with nullptr
 
     setNeighbors();
 }
@@ -130,4 +131,8 @@ void Board::setNeighbors() {
 
 std::array<std::shared_ptr<Plot>, Board::NUM_PLOTS> Board::getPlots() const {
     return plots;
+}
+
+std::array<std::unique_ptr<House>, Board::NUM_PLOTS>& Board::getHouses() {
+    return houses;
 }

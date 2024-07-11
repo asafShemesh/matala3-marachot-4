@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
 
-SRC = Main.cpp Resource.cpp Player.cpp CatanGame.cpp Dice.cpp Board.cpp Plot.cpp
+SRC = Main.cpp Resource.cpp Player.cpp catan.cpp Dice.cpp board.cpp Plot.cpp Houses.cpp Road.cpp
 OBJ = $(SRC:.cpp=.o)
 TARGET = catan
 

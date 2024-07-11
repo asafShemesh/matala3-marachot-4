@@ -14,8 +14,8 @@ public:
     void addResource(const std::string& resource, int amount);
     bool subtractResource(const std::string& resource, int amount);
     
-    void buildSettlement(const std::string& location);
-    void buildCity(const std::string& location);
+    void placeSettelemnt(int plotIndex, Board& board);
+    void buildCity(int plotIndex, Board& board);
     void buildRoad(int start, int end);
 
     int getVictoryPoints() const;
@@ -26,13 +26,11 @@ private:
     std::string name;
     int numSettlements;
     int numCities;
-    std::set<std::unique_ptr<House>> mySettlements;
-    std::set<std::unique_ptr<House>> myCities;
     std::set<Road> myRoads;
 
-    int wood;   
+    int wood;  
     int bricks;
-    int wheat;  
+    int wheat; 
     int ore;  
     int sheep; 
 
