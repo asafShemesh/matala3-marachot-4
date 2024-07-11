@@ -136,3 +136,7 @@ std::array<std::shared_ptr<Plot>, Board::NUM_PLOTS> Board::getPlots() const {
 std::array<std::unique_ptr<House>, Board::NUM_PLOTS>& Board::getHouses() {
     return houses;
 }
+
+const std::array<std::unique_ptr<House>, Board::NUM_PLOTS>& Board::getHouses() const {
+    return houses;
+}

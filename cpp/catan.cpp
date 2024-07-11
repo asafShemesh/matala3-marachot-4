@@ -44,6 +44,6 @@ Player CatanGame::get_turn() const {
     return *currentPlayer;
 }
 
-const Board& CatanGame::getBoard() const {
+const Board& CatanGame::getBoard() const { // Ensure this returns a const reference
     return board;
 }
