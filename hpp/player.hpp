@@ -30,11 +30,11 @@ private:
     std::set<std::unique_ptr<House>> myCities;
     std::set<Road> myRoads;
 
-    int wood;   // עץ
-    int bricks; // לבנה
-    int wheat;  // שיבולת
-    int ore;    // ברזל
-    int sheep;  // צמר
+    int wood;   
+    int bricks;
+    int wheat;  
+    int ore;  
+    int sheep; 
 
     int victoryPoints;
 };

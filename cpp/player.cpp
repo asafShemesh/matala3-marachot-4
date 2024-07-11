@@ -1,4 +1,4 @@
-#include "Player.hpp"
+#include "player.hpp"
 
 Player::Player(const std::string& name)
     : name(name), wood(0), bricks(0), wheat(0), ore(0), sheep(0), victoryPoints(0), numSettlements(0), numCities(0) {}
