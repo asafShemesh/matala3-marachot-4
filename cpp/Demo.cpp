@@ -22,7 +22,7 @@ int main() {
     // printPoints, printWinner exist and are implemented correctly
 
     // Player p1's actions
-    p1.placeSettlement(5, board);
+    p1.placeSettlement(5, &board);
     p1.placeSettlement(6, board);
     p1.placeRoad(5, 6);
     p1.placeSettlement(3, board);

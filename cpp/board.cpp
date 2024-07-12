@@ -129,14 +129,18 @@ void Board::setNeighbors() {
     plots[18]->addNeighbor(plots[17]);
 }
 
-std::array<std::shared_ptr<Plot>, Board::NUM_PLOTS> Board::getPlots() const {
+std::array<std::shared_ptr<Plot>, Board::NUM_PLOTS>& Board::getPlots() {
     return plots;
 }
 
-std::array<std::unique_ptr<House>, Board::NUM_PLOTS>& Board::getHouses() {
+const std::array<House*, Board::NUM_PLOTS>& Board::getHouses() const { 
     return houses;
 }
 
-const std::array<std::unique_ptr<House>, Board::NUM_PLOTS>& Board::getHouses() const {
+void Board::addHouse(std::unique_ptr<House> house) {
+    houseOwnership.push_back(std::move(house));
+}
+
+std::array<House*, Board::NUM_PLOTS>& Board::getMutableHouses() {
     return houses;
 }
