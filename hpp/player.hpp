@@ -11,6 +11,7 @@
 
 class DevelopmentCard; // Forward declaration
 class Deck;
+
 class Player {
 public:
     Player(const std::string& name);
@@ -22,7 +23,7 @@ public:
     void buildCity(int plot1Index, int plot2Index, int plot3Index, Board& board);
     bool placeRoad(int start, int end, Player &p1, Player &p2, Player &p3); // Change to return bool
 
-    void rollDice(const Board& board);
+    void rollDice(const Board& board, Deck &deck, std::vector<Player> &players); // Update signature
 
     void printPoints() const;
     int getVictoryPoints() const;
@@ -53,4 +54,7 @@ private:
     void deductResources();
     void addDevelopmentCard(const std::string& cardType);
     int getResourceAmount(const std::string& resource) const;
+
+    int getTotalResourceCards() const; // New method to get total resource cards
+    void discardHalfResources(Deck &deck); // New method to discard half resources
 };

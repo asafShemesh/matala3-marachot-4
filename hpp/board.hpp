@@ -15,6 +15,7 @@ public:
     const std::array<House*, NUM_PLOTS>& getHouses() const;
     std::array<House*, NUM_PLOTS>& getMutableHouses(); // Added mutable version
     void addHouse(std::unique_ptr<House> house);
+    
 
 private:
     std::array<std::shared_ptr<Plot>, NUM_PLOTS> plots;

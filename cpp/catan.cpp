@@ -2,8 +2,7 @@
 #include <iostream>
 
 CatanGame::CatanGame(Player& p1, Player& p2, Player& p3)
-    : player1(p1), player2(p2), player3(p3), currentPlayer(&p1), currentPlayerIndex(0) {}
-
+    : player1(p1), player2(p2), player3(p3), currentPlayer(&p1), currentPlayerIndex(0), board() {}
 
 void CatanGame::nextTurn() {
     currentPlayerIndex = (currentPlayerIndex + 1) % 3;
@@ -27,14 +26,13 @@ bool CatanGame::printWinner() const {
         std::cout << player3.getName() << " wins the game!" << std::endl;
         return true;
     }
-    std::cout << " no one won the game yet!" << std::endl;
     return false;
 }
 
-Player CatanGame::get_turn() const {
+Player& CatanGame::get_turn() const {
     return *currentPlayer;
 }
 
-const Board& CatanGame::getBoard() const { // Ensure this returns a const reference
+Board& CatanGame::getBoard() { // Updated to return a non-const reference
     return board;
 }
