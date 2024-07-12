@@ -13,37 +13,38 @@ int Player::roll()
     return (std::rand() % 6 + 1) + (std::rand() % 6 + 1);
 }
 
-void Player::rollDice(const Board &board, Deck &deck, std::vector<Player> &players)
+void Player::rollDice(const Board &board, Deck &deck, Player &p1, Player &p2, Player &p3)
 {
+    std::vector<Player *> players = {&p1, &p2, &p3};
     int diceValue = roll();
 
     // If the roll is 7, handle resource discarding
     if (diceValue == 7)
     {
-        for (Player &player : players)
+        for (Player *player : players)
         {
-            if (player.getTotalResourceCards() > 7)
+            if (player->getTotalResourceCards() > 7)
             {
-                player.discardHalfResources(deck);
+                player->discardHalfResources(deck);
             }
         }
         return; // No resource collection happens on a roll of 7
     }
 
     // Each player collects resources based on the dice roll
-    for (Player &player : players)
+    for (Player *player : players)
     {
         const auto &houses = board.getHouses(); // Access const houses
         for (const auto &house : houses)
         {
-            if (house && house->getOwner() == player.getName())
+            if (house && house->getOwner() == player->getName())
             {
                 for (const auto &plot : house->getAdjacentPlots())
                 {
                     if (plot->getNumber() == diceValue)
                     {
                         int amount = (house->getType() == HouseType::Settlement) ? 1 : 2;
-                        player.addResource(plot->getType(), amount);
+                        player->addResource(plot->getType(), amount);
                     }
                 }
             }

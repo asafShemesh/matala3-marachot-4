@@ -47,27 +47,27 @@ int main() {
     p3.placeRoad(14, 15, p1, p2, p3);
 
     // Turn sequence
-    p1.rollDice(board, deck, {p1, p2, p3}); // Adjusted to pass all players and the deck
+    p1.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
     p1.placeRoad(5, 6, p1, p2, p3); // p1 continues to build a road.
     catan.nextTurn();
 
-    p2.rollDice(board, deck, {p1, p2, p3}); // Adjusted to pass all players and the deck
+    p2.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
     catan.nextTurn();
 
-    p3.rollDice(board, deck, {p1, p2, p3}); // Adjusted to pass all players and the deck
+    p3.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
     catan.nextTurn();
 
     try {
-        p2.rollDice(board, deck, {p1, p2, p3}); // p2 tries to roll the dice again, but it's not his turn.
+        p2.rollDice(board, deck, p1, p2, p3); // p2 tries to roll the dice again, but it's not his turn.
     } catch (const std::exception &e) {
         cout << e.what() << endl;
     }
 
-    p1.rollDice(board, deck, {p1, p2, p3}); // Adjusted to pass all players and the deck
+    p1.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
     p1.trade(p2, "wood", "bricks", 1, 1); // p1 trades 1 wood for 1 brick with p2.
     catan.nextTurn();
 
-    p2.rollDice(board, deck, {p1, p2, p3}); // Adjusted to pass all players and the deck
+    p2.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
     p2.buyDevelopmentCard(deck); // p2 buys a development card. Let's say it is a bonus points card.
     catan.nextTurn();
 

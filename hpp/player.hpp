@@ -23,7 +23,7 @@ public:
     void buildCity(int plot1Index, int plot2Index, int plot3Index, Board& board);
     bool placeRoad(int start, int end, Player &p1, Player &p2, Player &p3); // Change to return bool
 
-    void rollDice(const Board& board, Deck &deck, std::vector<Player> &players); // Update signature
+    void rollDice(const Board& board, Deck &deck, Player &p1, Player &p2, Player &p3); // Update signature
 
     void printPoints() const;
     int getVictoryPoints() const;
