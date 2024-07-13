@@ -20,24 +20,49 @@ int main() {
     Board& board = catan.getBoard(); // Use the non-const version to get the board
 
     // Player p1's actions
-    p1.placeSettlement(10, board);
-    p1.placeRoad(10, 11,board, p1, p2, p3);
-    p1.placeSettlement(19, board);
-    p1.placeRoad(11, 19,board, p1, p2, p3);
+    cout << p1.getName() << "'s turn:" << endl;
+    p1.placeSettlement(10, board, catan);
+    p1.placeRoad(10, 11, board, p1, p2, p3, catan);
+    p1.placeSettlement(12, board, catan);
+    p1.placeRoad(12, 11, board, p1, p2, p3, catan);
+
+    // Player p1 offers a trade to Player p2
+    p1.offerTrade(p2, "wood", 1, "brick", 2, catan);
+
+    // Move to the next player
+    catan.nextTurn();
 
     // Player p2's actions
-    p2.placeSettlement(21, board);
-    p2.placeRoad(21, 22,board,  p1, p2, p3);
-    p2.placeSettlement(12, board);
-    p2.placeRoad(12, 13,board,  p1, p2, p3);
+    cout << p2.getName() << "'s turn:" << endl;
+    p2.placeSettlement(23, board, catan);
+    p2.placeRoad(22, 23, board, p1, p2, p3, catan);
+
+    // Player p2 offers a trade to Player p3
+    p2.offerTrade(p3, "brick", 1, "wheat", 2, catan);
+
+    // Move to the next player
+    catan.nextTurn();
 
     // Player p3's actions
-    p3.placeSettlement(23, board);
-    p3.placeRoad(23, 24,board,  p1, p2, p3);
-    p3.placeSettlement(15, board);
-    p3.placeRoad(15, 16,board,  p1, p2, p3);
+    cout << p3.getName() << "'s turn:" << endl;
+    p3.placeSettlement(25, board, catan);
+    p3.placeRoad(25, 24, board, p1, p2, p3, catan);
+    p3.buildCity(25, board, catan);
+    p3.placeRoad(24, 35, board, p1, p2, p3, catan);
+
+    // Move to the next player
+    catan.nextTurn();
+
+    // Player p2's additional actions (assuming a turn back to p2)
+    catan.nextTurn(); // Ensure it's p2's turn again
+
+    cout << p2.getName() << "'s turn:" << endl;
+    p2.buildCity(21, board, catan);
+    p2.placeRoad(21, 22, board, p1, p2, p3, catan);
+    p2.rollDice(board, p1, p2, p3, catan);
 
     // Print final points
+    cout << "Final points:" << endl;
     p1.printPoints();
     p2.printPoints();
     p3.printPoints();

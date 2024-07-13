@@ -12,8 +12,18 @@ int Player::roll()
 {
     return (std::rand() % 6 + 1) + (std::rand() % 6 + 1);
 }
-void Player::rollDice(const Board &board, Player &p1, Player &p2, Player &p3)
+
+bool Player::isPlayerTurn(const CatanGame &catan) const {
+    return &catan.get_turn() == this;
+}
+
+void Player::rollDice(const Board &board, Player &p1, Player &p2, Player &p3, CatanGame &catan)
 {
+    if (!isPlayerTurn(catan)) {
+        std::cerr << "It's not " << getName() << "'s turn." << std::endl;
+        return;
+    }
+
     std::vector<Player *> players = {&p1, &p2, &p3};
     int diceValue = roll();
 
@@ -212,7 +222,12 @@ std::string Player::getName() const
     return name;
 }
 
-void Player::placeSettlement(int vertex, Board &board) {
+void Player::placeSettlement(int vertex, Board &board, CatanGame &catan) {
+    if (!isPlayerTurn(catan)) {
+        std::cerr << "It's not " << getName() << "'s turn." << std::endl;
+        return;
+    }
+
     auto &houses = board.getMutableHouses();
     auto &plots = board.getMutablePlots();
 
@@ -228,14 +243,7 @@ void Player::placeSettlement(int vertex, Board &board) {
         return;
     }
 
-    // Ensure no adjacent vertex has a house
     std::vector<int> adjacentVertices = getVerticesWithDistanceOne(vertex, board);
-    std::cerr << "Adjacent vertices for vertex " << vertex << ": ";
-    for (const auto &v : adjacentVertices) {
-        std::cerr << v << " ";
-    }
-    std::cerr << std::endl;
-
     for (const auto &v : adjacentVertices) {
         if (houses[v]) {
             std::cerr << "Cannot place a settlement adjacent to another settlement on vertex " << v << "." << std::endl;
@@ -291,6 +299,7 @@ void Player::placeSettlement(int vertex, Board &board) {
     numSettlements++;
     victoryPoints++;
     std::cout << name << " placed a settlement on vertex " << vertex << "." << std::endl;
+    catan.printWinner();
 
     // Give resources from adjacent plots for the first two settlements
     if (numCities + numSettlements <= 2) {
@@ -310,36 +319,26 @@ std::vector<int> Player::getVerticesWithDistanceOne(int sourceVertex, const Boar
         if (it != vertices.end()) {
             auto idx = std::distance(vertices.begin(), it);
 
-            std::cerr << "Source vertex " << sourceVertex << " found in plot with vertices: ";
-            for (const auto &v : vertices) {
-                std::cerr << v << " ";
-            }
-            std::cerr << std::endl;
-
             // Previous vertex (if exists)
             if (idx > 0) {
                 auto prev_it = std::next(vertices.begin(), idx - 1);
                 adjacentVertices.insert(*prev_it);
-                std::cerr << "Previous vertex: " << *prev_it << std::endl;
             }
 
             // Next vertex (if exists)
             if (idx < static_cast<long>(vertices.size()) - 1) {
                 auto next_it = std::next(vertices.begin(), idx + 1);
                 adjacentVertices.insert(*next_it);
-                std::cerr << "Next vertex: " << *next_it << std::endl;
             }
 
             // For circular adjacency (if first and last are considered adjacent)
             if (idx == 0 && vertices.size() > 1) {
                 auto last_it = std::prev(vertices.end());
                 adjacentVertices.insert(*last_it);
-                std::cerr << "Circular adjacency (first/last): " << *last_it << std::endl;
             }
             if (idx == static_cast<long>(vertices.size()) - 1 && vertices.size() > 1) {
                 auto first_it = vertices.begin();
                 adjacentVertices.insert(*first_it);
-                std::cerr << "Circular adjacency (last/first): " << *first_it << std::endl;
             }
         }
     }
@@ -347,14 +346,28 @@ std::vector<int> Player::getVerticesWithDistanceOne(int sourceVertex, const Boar
     return std::vector<int>(adjacentVertices.begin(), adjacentVertices.end());
 }
 
-
-
-bool Player::placeRoad(int startVertex, int endVertex, Board &board, Player &p1, Player &p2, Player &p3)
+bool Player::placeRoad(int startVertex, int endVertex, Board &board, Player &p1, Player &p2, Player &p3, CatanGame &catan)
 {
+    if (!isPlayerTurn(catan)) {
+        std::cerr << "It's not " << getName() << "'s turn." << std::endl;
+        return false;
+    }
+
+    // Check if both vertices are within distance one from each other
+    std::vector<int> startAdjVertices = getVerticesWithDistanceOne(startVertex, board);
+    bool isAdjacent = std::find(startAdjVertices.begin(), startAdjVertices.end(), endVertex) != startAdjVertices.end();
+
+    if (!isAdjacent) {
+        std::cout << "The vertices must be within distance one from each other." << std::endl;
+        return false;
+    }
+
     // Check if the player has a house on one of the vertices
     auto &houses = board.getMutableHouses();
-    if (!(houses[startVertex] && houses[startVertex]->getOwner() == name) &&
-        !(houses[endVertex] && houses[endVertex]->getOwner() == name))
+    bool hasHouseOnStart = houses[startVertex] && houses[startVertex]->getOwner() == name;
+    bool hasHouseOnEnd = houses[endVertex] && houses[endVertex]->getOwner() == name;
+
+    if (!hasHouseOnStart && !hasHouseOnEnd)
     {
         std::cout << "Player must have a house on one of the vertices." << std::endl;
         return false;
@@ -392,8 +405,14 @@ bool Player::placeRoad(int startVertex, int endVertex, Board &board, Player &p1,
 }
 
 
-void Player::buildCity(int vertex, Board &board)
+
+void Player::buildCity(int vertex, Board &board, CatanGame &catan)
 {
+    if (!isPlayerTurn(catan)) {
+        std::cerr << "It's not " << getName() << "'s turn." << std::endl;
+        return;
+    }
+
     auto &houses = board.getMutableHouses();
 
     // Validate the vertex index
@@ -426,15 +445,16 @@ void Player::buildCity(int vertex, Board &board)
     numCities++;
     victoryPoints++;
     std::cout << name << " built a city on vertex " << vertex << "." << std::endl;
+    catan.printWinner();
 }
 
-// void Player::trade(Player &other, const std::string &giveResource, const std::string &takeResource, int giveAmount, int takeAmount)
-// {
-//     // Implementation for trading resources
-// }
-
-void Player::buyDevelopmentCard(Deck &deck)
+void Player::buyDevelopmentCard(Deck &deck, CatanGame &catan)
 {
+    if (!isPlayerTurn(catan)) {
+        std::cerr << "It's not " << getName() << "'s turn." << std::endl;
+        return;
+    }
+
     if (!hasEnoughResources())
     {
         throw std::runtime_error("Not enough resources to buy a development card");
@@ -466,12 +486,16 @@ void Player::addDevelopmentCard(const std::string &cardType)
     else if (cardType == "Victory Point")
     {
         devCards.push_back(std::make_unique<VictoryPointCard>());
-        victoryPoints++;
     }
 }
 
-void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Player &p3, CatanGame catan)
+void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Player &p3, CatanGame &catan)
 {
+    if (!isPlayerTurn(catan)) {
+        std::cerr << "It's not " << getName() << "'s turn." << std::endl;
+        return;
+    }
+
     for (auto it = devCards.begin(); it != devCards.end(); ++it)
     {
         if ((*it)->getType() == cardType)
@@ -501,10 +525,10 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
                 int start1, end1, start2, end2;
                 std::cout << "Enter the start and end points for the first road: ";
                 std::cin >> start1 >> end1;
-                placeRoad(start1, end1,catan.getBoard(), p1, p2, p3);
+                placeRoad(start1, end1, catan.getBoard(), p1, p2, p3, catan);
                 std::cout << "Enter the start and end points for the second road: ";
                 std::cin >> start2 >> end2;
-                placeRoad(start2, end2,catan.getBoard(),p1, p2, p3);
+                placeRoad(start2, end2, catan.getBoard(), p1, p2, p3, catan);
                 catan.nextTurn();
                 break;
             }
@@ -524,6 +548,7 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
                 if (knightCount == 3)
                 {
                     victoryPoints += 2;
+                    catan.printWinner();
                 }
                 catan.nextTurn();
                 break;
@@ -537,3 +562,40 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
         }
     }
 }
+
+
+    bool Player::offerTrade(Player& otherPlayer, const std::string& giveResource, int giveAmount, const std::string& receiveResource, int receiveAmount, CatanGame &catan) {
+    if (!isPlayerTurn(catan)) {
+        std::cerr << "It's not " << getName() << "'s turn." << std::endl;
+        return false;
+    }
+
+    // Check if the other player has enough resources to accept the trade
+    if (otherPlayer.getResourceAmount(receiveResource) < receiveAmount) {
+        std::cerr << otherPlayer.getName() << " does not have enough " << receiveResource << " to accept the trade." << std::endl;
+        return false;
+    }
+
+    // Check if the trade is beneficial for the other player
+    if (giveAmount >= receiveAmount) {
+        std::cerr << "The trade is not beneficial enough for " << otherPlayer.getName() << "." << std::endl;
+        return false;
+    }
+
+    // Check if the current player has enough resources to offer the trade
+    if (getResourceAmount(giveResource) < giveAmount) {
+        std::cerr << "You do not have enough " << giveResource << " to offer the trade." << std::endl;
+        return false;
+    }
+
+    // Execute the trade
+    subtractResource(giveResource, giveAmount);
+    addResource(receiveResource, receiveAmount);
+    otherPlayer.subtractResource(receiveResource, receiveAmount);
+    otherPlayer.addResource(giveResource, giveAmount);
+
+    std::cout << getName() << " traded " << giveAmount << " " << giveResource << " with " << otherPlayer.getName() << " for " << receiveAmount << " " << receiveResource << "." << std::endl;
+
+    return true;
+}
+

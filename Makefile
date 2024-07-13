@@ -9,7 +9,8 @@ OBJ_DIR = obj
 BIN_DIR = bin
 INC_DIR = hpp
 
-# Output
+# Output 
+# hi
 MAIN_TARGET = $(BIN_DIR)/Demo
 
 # Source files

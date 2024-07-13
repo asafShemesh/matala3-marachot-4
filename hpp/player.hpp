@@ -21,23 +21,24 @@ public:
     void addResource(const std::string& resource, int amount);
     bool subtractResource(const std::string& resource, int amount);
 
-    void buildCity(int vertex, Board& board);
-    bool placeRoad(int start, int end, Board& board, Player &p1, Player &p2, Player &p3); // Change to return bool
-    void rollDice(const Board& board, Player &p1, Player &p2, Player &p3); // Update signature
-    void placeSettlement(int vertex, Board &board);
+    void buildCity(int vertex, Board& board, CatanGame &catan); // Update signature
+    bool placeRoad(int start, int end, Board& board, Player &p1, Player &p2, Player &p3, CatanGame &catan); // Update signature
+    void rollDice(const Board& board, Player &p1, Player &p2, Player &p3, CatanGame &catan); // Update signature
+    void placeSettlement(int vertex, Board &board, CatanGame &catan); // Update signature
     std::vector<int> getVerticesWithDistanceOne(int sourceVertex, const Board &board) const;
-
 
     void printPoints() const;
     int getVictoryPoints() const;
     std::string getName() const;
-    void buyDevelopmentCard(Deck& deck);
-    void useDevelopmentCard(DevCardType cardType, Player& p1, Player& p2, Player& p3, CatanGame catan);
+    void buyDevelopmentCard(Deck& deck, CatanGame &catan); // Update signature
+    void useDevelopmentCard(DevCardType cardType, Player& p1, Player& p2, Player& p3, CatanGame &catan); // Update signature
+    bool offerTrade(Player& otherPlayer, const std::string& giveResource, int giveAmount, const std::string& receiveResource, int receiveAmount, CatanGame &catan); // New method
 
     int getResourceAmount(const std::string& resource) const; // Make public
     bool hasEnoughResources() const; // Make public
 
 private:
+    bool isPlayerTurn(const CatanGame &catan) const; // New helper method
     int roll();
     std::string name;
     int wood;
