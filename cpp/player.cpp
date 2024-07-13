@@ -211,53 +211,57 @@ std::string Player::getName() const
 {
     return name;
 }
-void Player::placeSettlement(int vertex, Board &board)
-{
-    auto &houses = board.getMutableHouses(); // Use a non-const version to modify the houses
+
+void Player::placeSettlement(int vertex, Board &board) {
+    auto &houses = board.getMutableHouses();
     auto &plots = board.getMutablePlots();
 
-        // Check if the vertex already has a settlement
-        for (const auto &house : houses)
-        {
-            if (house && house->getVertex() == vertex)
-            {
-                std::cout << "Cannot place a settlement on vertex " << vertex << " because it already has a house owned by " << house->getOwner() << "." << std::endl;
-                return; // Cannot place a settlement if the vertex already has a house
+    // Validate the vertex index
+    if (vertex < 0 || vertex >= static_cast<int>(houses.size())) {
+        std::cerr << "Error: Vertex index " << vertex << " is out of bounds for houses array." << std::endl;
+        return;
+    }
+
+    // Check if the vertex already has a settlement
+    if (houses[vertex]) {
+        std::cerr << "Cannot place a settlement on vertex " << vertex << " because it already has a house." << std::endl;
+        return;
+    }
+
+    // Ensure no adjacent vertex has a house
+    std::vector<int> adjacentVertices = getVerticesWithDistanceOne(vertex, board);
+    std::cerr << "Adjacent vertices for vertex " << vertex << ": ";
+    for (const auto &v : adjacentVertices) {
+        std::cerr << v << " ";
+    }
+    std::cerr << std::endl;
+
+    for (const auto &v : adjacentVertices) {
+        if (houses[v]) {
+            std::cerr << "Cannot place a settlement adjacent to another settlement on vertex " << v << "." << std::endl;
+            return;
+        }
+    }
+
+    // Ensure there's a valid road leading to the settlement location for subsequent settlements
+    if (numCities + numSettlements >= 2) {
+        bool hasRoad = false;
+        for (const auto &road : myRoads) {
+            if ((road.getStart() == vertex || road.getEnd() == vertex) &&
+                ((houses[road.getStart()] && houses[road.getStart()]->getOwner() == name) ||
+                 (houses[road.getEnd()] && houses[road.getEnd()]->getOwner() == name))) {
+                hasRoad = true;
+                break;
             }
         }
-
-        // Check for adjacent vertices connected by a valid road
-        std::unordered_set<int> validVertices;
-        for (const auto &plot : plots)
-        {
-            for (const auto &v : plot->getVertices())
-            {
-                if (validRoad(vertex, v, board))
-                {
-                    validVertices.insert(v);
-                }
-            }
+        if (!hasRoad) {
+            std::cerr << "Player must have a road leading to the settlement location." << std::endl;
+            return;
         }
 
-        // Ensure no vertex from those valid vertices has a house
-        for (const auto &v : validVertices)
-        {
-            for (const auto &house : houses)
-            {
-                if (house && house->getVertex() == v)
-                {
-                    std::cout << "Cannot place a settlement adjacent to another settlement on vertex " << v << "." << std::endl;
-                    return;
-                }
-            }
-        }
-
-    // Check if the player needs to pay resources
-    if (numCities + numSettlements >= 2)
-    {
-        if (!(wood >= 1 && sheep >= 1 && bricks >= 1 && wheat >= 1))
-        {
-            std::cout << "Not enough resources to place a settlement." << std::endl;
+        // Check if the player has enough resources
+        if (!(wood >= 1 && sheep >= 1 && bricks >= 1 && wheat >= 1)) {
+            std::cerr << "Not enough resources to place a settlement." << std::endl;
             return; // Not enough resources to place a settlement
         }
         subtractResource("bricks", 1);
@@ -268,10 +272,8 @@ void Player::placeSettlement(int vertex, Board &board)
 
     // Find the plots adjacent to the vertex
     std::vector<std::shared_ptr<Plot>> adjacentPlots;
-    for (auto &plot : plots)
-    {
-        if (plot->getVertices().count(vertex) > 0)
-        {
+    for (auto &plot : plots) {
+        if (std::find(plot->getVertices().begin(), plot->getVertices().end(), vertex) != plot->getVertices().end()) {
             adjacentPlots.push_back(plot);
         }
     }
@@ -280,7 +282,7 @@ void Player::placeSettlement(int vertex, Board &board)
     auto settlement = std::make_unique<House>(HouseType::Settlement, name, vertex, adjacentPlots);
     House *settlementPtr = settlement.get(); // Get raw pointer before moving
 
-    // Assign raw pointers to the house array
+    // Assign raw pointer to the house array
     houses[vertex] = settlementPtr;
 
     // Move the unique pointer to the Board's unique pointer array to maintain ownership
@@ -291,60 +293,73 @@ void Player::placeSettlement(int vertex, Board &board)
     std::cout << name << " placed a settlement on vertex " << vertex << "." << std::endl;
 
     // Give resources from adjacent plots for the first two settlements
-    if (numCities + numSettlements <= 2)
-    {
-        for (const auto &plot : settlementPtr->getAdjacentPlots())
-        {
+    if (numCities + numSettlements <= 2) {
+        for (const auto &plot : settlementPtr->getAdjacentPlots()) {
             addResource(plot->getType(), 1);
         }
     }
 }
 
+std::vector<int> Player::getVerticesWithDistanceOne(int sourceVertex, const Board &board) const {
+    std::unordered_set<int> adjacentVertices;
+    const auto &plots = board.getPlots();
 
-bool Player::validRoad(int vertex1, int vertex2, const Board &board) const
-{
-    const auto &plots = board.getPlots(); // Get the plots from the board
-
-    // Iterate through each plot to check if the vertices are on the same plot edge
-    for (const auto &plot : plots)
-    {
+    for (const auto &plot : plots) {
         const auto &vertices = plot->getVertices();
-        
-        // Check if both vertices are in the plot's vertex set
-        if (vertices.count(vertex1) > 0 && vertices.count(vertex2) > 0)
-        {
-            // Check if vertex1 and vertex2 are adjacent in the plot
-            auto it1 = vertices.find(vertex1);
-            auto it2 = vertices.find(vertex2);
+        auto it = std::find(vertices.begin(), vertices.end(), sourceVertex);
+        if (it != vertices.end()) {
+            auto idx = std::distance(vertices.begin(), it);
 
-            // Ensure the vertices are adjacent (check the order in the set)
-            if (it1 != vertices.end() && it2 != vertices.end())
-            {
-                // Assuming the vertices are stored in a circular manner
-                auto next = std::next(it1);
-                if (next == vertices.end())
-                    next = vertices.begin();
-                
-                auto prev = (it1 == vertices.begin()) ? std::prev(vertices.end()) : std::prev(it1);
+            std::cerr << "Source vertex " << sourceVertex << " found in plot with vertices: ";
+            for (const auto &v : vertices) {
+                std::cerr << v << " ";
+            }
+            std::cerr << std::endl;
 
-                if (*next == vertex2 || *prev == vertex2)
-                {
-                    return true; // The vertices are adjacent
-                }
+            // Previous vertex (if exists)
+            if (idx > 0) {
+                auto prev_it = std::next(vertices.begin(), idx - 1);
+                adjacentVertices.insert(*prev_it);
+                std::cerr << "Previous vertex: " << *prev_it << std::endl;
+            }
+
+            // Next vertex (if exists)
+            if (idx < static_cast<long>(vertices.size()) - 1) {
+                auto next_it = std::next(vertices.begin(), idx + 1);
+                adjacentVertices.insert(*next_it);
+                std::cerr << "Next vertex: " << *next_it << std::endl;
+            }
+
+            // For circular adjacency (if first and last are considered adjacent)
+            if (idx == 0 && vertices.size() > 1) {
+                auto last_it = std::prev(vertices.end());
+                adjacentVertices.insert(*last_it);
+                std::cerr << "Circular adjacency (first/last): " << *last_it << std::endl;
+            }
+            if (idx == static_cast<long>(vertices.size()) - 1 && vertices.size() > 1) {
+                auto first_it = vertices.begin();
+                adjacentVertices.insert(*first_it);
+                std::cerr << "Circular adjacency (last/first): " << *first_it << std::endl;
             }
         }
     }
 
-    return false; // The vertices are not adjacent
+    return std::vector<int>(adjacentVertices.begin(), adjacentVertices.end());
 }
 
 
 
-
-
-
-bool Player::placeRoad(int startVertex, int endVertex, Player &p1, Player &p2, Player &p3)
+bool Player::placeRoad(int startVertex, int endVertex, Board &board, Player &p1, Player &p2, Player &p3)
 {
+    // Check if the player has a house on one of the vertices
+    auto &houses = board.getMutableHouses();
+    if (!(houses[startVertex] && houses[startVertex]->getOwner() == name) &&
+        !(houses[endVertex] && houses[endVertex]->getOwner() == name))
+    {
+        std::cout << "Player must have a house on one of the vertices." << std::endl;
+        return false;
+    }
+
     // If the player has fewer than 2 roads, they can place the road for free
     if (myRoads.size() >= 2)
     {
@@ -372,7 +387,45 @@ bool Player::placeRoad(int startVertex, int endVertex, Player &p1, Player &p2, P
     }
 
     myRoads.insert(road);
+    std::cout << name << " placed a road between " << startVertex << " and " << endVertex << "." << std::endl;
     return true;
+}
+
+
+void Player::buildCity(int vertex, Board &board)
+{
+    auto &houses = board.getMutableHouses();
+
+    // Validate the vertex index
+    if (vertex < 0 || vertex >= static_cast<int>(houses.size()))
+    {
+        std::cerr << "Error: Vertex index " << vertex << " is out of bounds for houses array." << std::endl;
+        return;
+    }
+
+    // Check if the vertex already has a settlement
+    if (!houses[vertex] || houses[vertex]->getOwner() != name || houses[vertex]->getType() != HouseType::Settlement)
+    {
+        std::cerr << "Error: Cannot build a city on vertex " << vertex << " because it doesn't have your settlement." << std::endl;
+        return;
+    }
+
+    // Check if the player has enough resources to build a city
+    if (!(wheat >= 2 && ore >= 3))
+    {
+        std::cerr << "Not enough resources to build a city." << std::endl;
+        return;
+    }
+
+    // Deduct resources for building the city
+    subtractResource("wheat", 2);
+    subtractResource("ore", 3);
+
+    // Upgrade the settlement to a city
+    houses[vertex]->setType(HouseType::City);
+    numCities++;
+    victoryPoints++;
+    std::cout << name << " built a city on vertex " << vertex << "." << std::endl;
 }
 
 // void Player::trade(Player &other, const std::string &giveResource, const std::string &takeResource, int giveAmount, int takeAmount)
@@ -448,10 +501,10 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
                 int start1, end1, start2, end2;
                 std::cout << "Enter the start and end points for the first road: ";
                 std::cin >> start1 >> end1;
-                placeRoad(start1, end1, p1, p2, p3);
+                placeRoad(start1, end1,catan.getBoard(), p1, p2, p3);
                 std::cout << "Enter the start and end points for the second road: ";
                 std::cin >> start2 >> end2;
-                placeRoad(start2, end2, p1, p2, p3);
+                placeRoad(start2, end2,catan.getBoard(),p1, p2, p3);
                 catan.nextTurn();
                 break;
             }

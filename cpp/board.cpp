@@ -1,5 +1,7 @@
 #include "board.hpp"
 
+constexpr int Board::NUM_VERTICES;
+
 Board::Board() {
     createBoard();
 }
@@ -23,25 +25,25 @@ void Board::createBoard() {
     setNeighbors();
 
     // Initialize vertices for each plot
-    plots[0]->setVertices({0, 1, 2, 8, 9, 10});
-    plots[1]->setVertices({2, 3, 4, 10, 11, 12});
-    plots[2]->setVertices({4, 5, 6, 12, 13, 14});
-    plots[3]->setVertices({7, 8, 9, 17, 18, 19});
-    plots[4]->setVertices({9, 10, 11, 19, 20, 21});
-    plots[5]->setVertices({11, 12, 13, 21, 22, 23});
-    plots[6]->setVertices({13, 14, 15, 23, 24, 25});
-    plots[7]->setVertices({16, 17, 18, 27, 28, 29});
-    plots[8]->setVertices({18, 19, 20, 29, 30, 31});
-    plots[9]->setVertices({20, 21, 22, 31, 32, 33});
-    plots[10]->setVertices({22, 23, 24, 33, 34, 35});
-    plots[11]->setVertices({24, 25, 26, 35, 36, 37});
-    plots[12]->setVertices({28, 29, 30, 38, 39, 40});
-    plots[13]->setVertices({30, 31, 32, 40, 41, 42});
-    plots[14]->setVertices({32, 33, 34, 42, 43, 44});
-    plots[15]->setVertices({34, 35, 36, 44, 45, 46});
-    plots[16]->setVertices({39, 40, 41, 47, 48, 49});
-    plots[17]->setVertices({41, 42, 43, 49, 50, 51});
-    plots[18]->setVertices({43, 44, 45, 51, 52, 53});
+    plots[0]->setVertices({0, 1, 2, 10, 9, 8});
+    plots[1]->setVertices({2, 3, 4, 12, 11, 10});
+    plots[2]->setVertices({4, 5, 6, 14, 13, 12});
+    plots[3]->setVertices({7, 8, 9, 19, 18, 17});
+    plots[4]->setVertices({9, 10, 11, 21, 20, 19});
+    plots[5]->setVertices({11, 12, 13, 23, 22, 21});
+    plots[6]->setVertices({13, 14, 15, 25, 24, 23});
+    plots[7]->setVertices({16, 17, 18, 29, 28, 27});
+    plots[8]->setVertices({18, 19, 20, 31, 30, 29});
+    plots[9]->setVertices({20, 21, 22, 33, 32, 31});
+    plots[10]->setVertices({22, 23, 24, 35, 34, 33});
+    plots[11]->setVertices({24, 25, 26, 37, 36, 35});
+    plots[12]->setVertices({28, 29, 30, 40, 39, 38});
+    plots[13]->setVertices({30, 31, 32, 42, 41, 40});
+    plots[14]->setVertices({32, 33, 34, 44, 43, 42});
+    plots[15]->setVertices({34, 35, 36, 46, 45, 44});
+    plots[16]->setVertices({39, 40, 41, 49, 48, 47});
+    plots[17]->setVertices({41, 42, 43, 51, 50, 49});
+    plots[18]->setVertices({43, 44, 45, 53, 52, 51});
 }
 
 void Board::setNeighbors() {
@@ -150,23 +152,23 @@ void Board::setNeighbors() {
     plots[18]->addNeighbor(plots[17]);
 }
 
-const std::array<std::shared_ptr<Plot>, 19>& Board::getPlots() const
-{
+const std::array<std::shared_ptr<Plot>, 19>& Board::getPlots() const {
     return plots;
 }
 
-const std::array<House*, Board::NUM_PLOTS>& Board::getHouses() const { 
+const std::array<House*, Board::NUM_VERTICES>& Board::getHouses() const {
     return houses;
+}
+
+std::array<House*, Board::NUM_VERTICES>& Board::getMutableHouses() {
+    return houses;
+}
+
+std::array<std::shared_ptr<Plot>, 19>& Board::getMutablePlots() {
+    return plots;
 }
 
 void Board::addHouse(std::unique_ptr<House> house) {
     houseOwnership.push_back(std::move(house));
-}
 
-std::array<House*, Board::NUM_PLOTS>& Board::getMutableHouses() {
-    return houses;
-}
-
-std::array<std::shared_ptr<Plot>, Board::NUM_PLOTS>& Board::getMutablePlots() {
-    return plots;
 }

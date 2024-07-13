@@ -8,6 +8,7 @@ public:
     int getEnd() const;
     std::string getOwner() const;
     bool operator<(const Road& other) const;
+    bool operator==(const Road &other) const;
 
 private:
     int start;

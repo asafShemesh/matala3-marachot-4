@@ -4,11 +4,10 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <set>
 
 class Plot {
 public:
-    Plot(const std::string& type, int number);
+    Plot(const std::string &type, int number);
 
     std::string getType() const;
     void setType(const std::string& type);
@@ -19,14 +18,14 @@ public:
     std::vector<std::shared_ptr<Plot>> getNeighbors() const;
     void addNeighbor(const std::shared_ptr<Plot>& neighbor);
 
-    std::set<int> getVertices() const;  // Ensure this method is correctly defined
-    void setVertices(const std::set<int>& vertices);
+    void setVertices(const std::vector<int> &vertices);
+    const std::vector<int>& getVertices() const;
 
 private:
     std::string type;
     int number;
     std::vector<std::shared_ptr<Plot>> neighbors;
-    std::set<int> vertices;
+    std::vector<int> vertices;
 };
 
 #endif // PLOT_HPP

@@ -1,6 +1,6 @@
 #include "Plot.hpp"
 
-Plot::Plot(const std::string& type, int number) : type(type), number(number) {}
+Plot::Plot(const std::string &type, int number) : type(type), number(number) {}
 
 std::string Plot::getType() const {
     return type;
@@ -26,10 +26,10 @@ void Plot::addNeighbor(const std::shared_ptr<Plot>& neighbor) {
     neighbors.push_back(neighbor);
 }
 
-std::set<int> Plot::getVertices() const {
-    return vertices;
+void Plot::setVertices(const std::vector<int> &vertices) {
+    this->vertices = vertices;
 }
 
-void Plot::setVertices(const std::set<int>& vertices) {
-    this->vertices = vertices;
+const std::vector<int>& Plot::getVertices() const {
+    return vertices;
 }

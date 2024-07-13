@@ -21,12 +21,12 @@ public:
     void addResource(const std::string& resource, int amount);
     bool subtractResource(const std::string& resource, int amount);
 
-    void placeSettlement(int vertex, Board& board);
     void buildCity(int vertex, Board& board);
-    bool placeRoad(int start, int end, Player &p1, Player &p2, Player &p3); // Change to return bool
-
+    bool placeRoad(int start, int end, Board& board, Player &p1, Player &p2, Player &p3); // Change to return bool
     void rollDice(const Board& board, Player &p1, Player &p2, Player &p3); // Update signature
-    bool validRoad(int vertex1, int vertex2, const Board &board)const;
+    void placeSettlement(int vertex, Board &board);
+    std::vector<int> getVerticesWithDistanceOne(int sourceVertex, const Board &board) const;
+
 
     void printPoints() const;
     int getVictoryPoints() const;
