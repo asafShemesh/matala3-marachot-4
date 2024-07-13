@@ -21,23 +21,23 @@ int main() {
 
     // Player p1's actions
     cout << "Player " << p1.getName() << " is placing initial settlements and roads." << endl;
-    p1.placeSettlement(0, 1, 2, board);
+    p1.placeSettlement(10, board); // Adjust with appropriate vertex
     p1.placeRoad(0, 1, p1, p2, p3);
-    p1.placeSettlement(3, 4, 5, board);
+    p1.placeSettlement(19, board); // Adjust with appropriate vertex
     p1.placeRoad(3, 4, p1, p2, p3);
 
     // Player p2's actions
     cout << "Player " << p2.getName() << " is placing initial settlements and roads." << endl;
-    p2.placeSettlement(6, 7, 8, board);
+    p2.placeSettlement(20, board); // Adjust with appropriate vertex
     p2.placeRoad(6, 7, p1, p2, p3);
-    p2.placeSettlement(9, 10, 11, board);
+    p2.placeSettlement(21, board); // Adjust with appropriate vertex
     p2.placeRoad(9, 10, p1, p2, p3);
 
     // Player p3's actions
     cout << "Player " << p3.getName() << " is placing initial settlements and roads." << endl;
-    p3.placeSettlement(12, 13, 14, board);
+    p3.placeSettlement(22, board); // Adjust with appropriate vertex
     p3.placeRoad(12, 13, p1, p2, p3);
-    p3.placeSettlement(15, 16, 17, board);
+    p3.placeSettlement(23, board); // Adjust with appropriate vertex
     p3.placeRoad(15, 16, p1, p2, p3);
 
     // Simulate turns without loops

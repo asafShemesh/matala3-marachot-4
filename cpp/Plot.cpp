@@ -6,7 +6,6 @@ std::string Plot::getType() const {
     return type;
 }
 
-
 void Plot::setType(const std::string& type) {
     this->type = type;
 }
@@ -25,4 +24,12 @@ std::vector<std::shared_ptr<Plot>> Plot::getNeighbors() const {
 
 void Plot::addNeighbor(const std::shared_ptr<Plot>& neighbor) {
     neighbors.push_back(neighbor);
+}
+
+std::set<int> Plot::getVertices() const {
+    return vertices;
+}
+
+void Plot::setVertices(const std::set<int>& vertices) {
+    this->vertices = vertices;
 }
