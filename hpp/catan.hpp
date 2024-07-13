@@ -1,6 +1,7 @@
 #pragma once
-#include "player.hpp"
 #include "board.hpp"
+
+class Player; // Forward declaration
 
 class CatanGame {
 public:
@@ -9,7 +10,8 @@ public:
     void nextTurn();
     bool printWinner() const;
     Player& get_turn() const;
-    Board& getBoard(); // Updated to return a non-const reference
+    const Board& getBoardco() const; // Const version
+    Board& getBoard(); // Non-const version
 
 private:
     Player& player1;
@@ -17,5 +19,5 @@ private:
     Player& player3;
     Player* currentPlayer;
     int currentPlayerIndex;
-    Board board; // Assuming you have a Board class defined
+    Board board;
 };

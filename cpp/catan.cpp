@@ -1,8 +1,9 @@
 #include "catan.hpp"
+#include "player.hpp"
 #include <iostream>
 
 CatanGame::CatanGame(Player& p1, Player& p2, Player& p3)
-    : player1(p1), player2(p2), player3(p3), currentPlayer(&p1), currentPlayerIndex(0), board() {}
+    : player1(p1), player2(p2), player3(p3), currentPlayer(&p1), currentPlayerIndex(0) {}
 
 void CatanGame::nextTurn() {
     currentPlayerIndex = (currentPlayerIndex + 1) % 3;
@@ -13,6 +14,7 @@ void CatanGame::nextTurn() {
     } else {
         currentPlayer = &player3;
     }
+    printWinner();
 }
 
 bool CatanGame::printWinner() const {
@@ -33,6 +35,10 @@ Player& CatanGame::get_turn() const {
     return *currentPlayer;
 }
 
-Board& CatanGame::getBoard() { // Updated to return a non-const reference
+const Board& CatanGame::getBoardco() const { // Const version
+    return board;
+}
+
+Board& CatanGame::getBoard() { // Non-const version
     return board;
 }

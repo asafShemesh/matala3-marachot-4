@@ -6,6 +6,7 @@ std::string Plot::getType() const {
     return type;
 }
 
+
 void Plot::setType(const std::string& type) {
     this->type = type;
 }

@@ -7,7 +7,6 @@
 #include "deck.hpp"
 
 using namespace std;
-using namespace ariel;
 
 int main() {
     Player p1("Amit");
@@ -15,67 +14,55 @@ int main() {
     Player p3("Dana");
     Deck deck; // Assuming Deck is properly defined and used in the game
     CatanGame catan(p1, p2, p3);
+    vector<Player *> players = {&p1, &p2, &p3};
 
-    // Starting of the game. Every player places two settlements and two roads.
-    Board& board = catan.getBoard(); // get the board of the game as a non-const reference
-
-    // The following functions depend on implementations not provided in the first 20 lines:
-    // Assuming placeSettlement, placeRoad, rollDice, endTurn, trade, buyDevelopmentCard,
-    // printPoints, printWinner exist and are implemented correctly
+    // Starting the game. Every player places two settlements and two roads.
+    Board& board = catan.getBoard(); // Use the non-const version to get the board
 
     // Player p1's actions
-    p1.placeSettlement(5, 6, 7, board);
-    p1.placeRoad(5, 6, p1, p2, p3);
+    cout << "Player " << p1.getName() << " is placing initial settlements and roads." << endl;
+    p1.placeSettlement(0, 1, 2, board);
+    p1.placeRoad(0, 1, p1, p2, p3);
     p1.placeSettlement(3, 4, 5, board);
     p1.placeRoad(3, 4, p1, p2, p3);
 
     // Player p2's actions
-    p2.placeSettlement(8, 9, 10, board);
-    p2.placeRoad(8, 9, p1, p2, p3);
-
-    try {
-        p3.placeSettlement(8, 9, 10, board); // p3 tries to place a settlement in the same location as p2.
-    } catch (const std::exception &e) {
-        cout << e.what() << endl;
-    }
-
-    p2.placeSettlement(11, 12, 13, board);
-    p2.placeRoad(11, 12, p1, p2, p3);
+    cout << "Player " << p2.getName() << " is placing initial settlements and roads." << endl;
+    p2.placeSettlement(6, 7, 8, board);
+    p2.placeRoad(6, 7, p1, p2, p3);
+    p2.placeSettlement(9, 10, 11, board);
+    p2.placeRoad(9, 10, p1, p2, p3);
 
     // Player p3's actions
-    p3.placeSettlement(14, 15, 16, board);
-    p3.placeRoad(14, 15, p1, p2, p3);
+    cout << "Player " << p3.getName() << " is placing initial settlements and roads." << endl;
+    p3.placeSettlement(12, 13, 14, board);
+    p3.placeRoad(12, 13, p1, p2, p3);
+    p3.placeSettlement(15, 16, 17, board);
+    p3.placeRoad(15, 16, p1, p2, p3);
 
-    // Turn sequence
-    p1.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
-    p1.placeRoad(5, 6, p1, p2, p3); // p1 continues to build a road.
+    // Simulate turns without loops
+    Player& currentPlayer1 = catan.get_turn();
+    cout << "It's " << currentPlayer1.getName() << "'s turn." << endl;
+    currentPlayer1.rollDice(board, p1, p2, p3);
     catan.nextTurn();
 
-    p2.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
+    Player& currentPlayer2 = catan.get_turn();
+    cout << "It's " << currentPlayer2.getName() << "'s turn." << endl;
+    currentPlayer2.rollDice(board, p1, p2, p3);
     catan.nextTurn();
 
-    p3.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
+    Player& currentPlayer3 = catan.get_turn();
+    cout << "It's " << currentPlayer3.getName() << "'s turn." << endl;
+    currentPlayer3.rollDice(board, p1, p2, p3);
     catan.nextTurn();
 
-    try {
-        p2.rollDice(board, deck, p1, p2, p3); // p2 tries to roll the dice again, but it's not his turn.
-    } catch (const std::exception &e) {
-        cout << e.what() << endl;
-    }
-
-    p1.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
-    p1.trade(p2, "wood", "bricks", 1, 1); // p1 trades 1 wood for 1 brick with p2.
-    catan.nextTurn();
-
-    p2.rollDice(board, deck, p1, p2, p3); // Adjusted to pass all players and the deck
-    p2.buyDevelopmentCard(deck); // p2 buys a development card. Let's say it is a bonus points card.
-    catan.nextTurn();
-
-    p1.printPoints(); // p1 has 2 points because it has two settlements.
-    p2.printPoints(); // p2 has 3 points because it has two settlements and a bonus points card.
-    p3.printPoints(); // p3 has 2 points because it has two settlements.
-
+    // Print final points and winner
+    p1.printPoints();
+    p2.printPoints();
+    p3.printPoints();
     if (!catan.printWinner()) {
         cout << "No player has reached 10 points yet." << endl;
     }
+
+    return 0;
 }

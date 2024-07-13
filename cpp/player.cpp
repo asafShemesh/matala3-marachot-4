@@ -12,26 +12,29 @@ int Player::roll()
 {
     return (std::rand() % 6 + 1) + (std::rand() % 6 + 1);
 }
-
-void Player::rollDice(const Board &board, Deck &deck, Player &p1, Player &p2, Player &p3)
+void Player::rollDice(const Board &board, Player &p1, Player &p2, Player &p3)
 {
     std::vector<Player *> players = {&p1, &p2, &p3};
     int diceValue = roll();
 
+    std::cout << getName() << " rolled a " << diceValue << "." << std::endl;
+
     // If the roll is 7, handle resource discarding
     if (diceValue == 7)
     {
+        std::cout << "A 7 was rolled. Players must discard half of their resources if they have more than 7." << std::endl;
         for (Player *player : players)
         {
             if (player->getTotalResourceCards() > 7)
             {
-                player->discardHalfResources(deck);
+                player->discardHalfResources();
             }
         }
         return; // No resource collection happens on a roll of 7
     }
 
     // Each player collects resources based on the dice roll
+    std::unordered_set<std::shared_ptr<Plot>> collectedPlots;
     for (Player *player : players)
     {
         const auto &houses = board.getHouses(); // Access const houses
@@ -41,10 +44,11 @@ void Player::rollDice(const Board &board, Deck &deck, Player &p1, Player &p2, Pl
             {
                 for (const auto &plot : house->getAdjacentPlots())
                 {
-                    if (plot->getNumber() == diceValue)
+                    if (plot->getNumber() == diceValue && collectedPlots.find(plot) == collectedPlots.end())
                     {
                         int amount = (house->getType() == HouseType::Settlement) ? 1 : 2;
                         player->addResource(plot->getType(), amount);
+                        collectedPlots.insert(plot); // Mark the plot as collected
                     }
                 }
             }
@@ -53,29 +57,38 @@ void Player::rollDice(const Board &board, Deck &deck, Player &p1, Player &p2, Pl
 }
 
 
+
 void Player::addResource(const std::string &resource, int amount)
 {
-    if (resource == "wood")
+    if (resource == "Wood")
     {
         wood += amount;
+        std::cout << this->getName() << " collects " << amount << " wood." << std::endl;
     }
-    else if (resource == "bricks")
+    else if (resource == "Brick")
     {
         bricks += amount;
+        std::cout << this->getName() << " collects " << amount << " bricks." << std::endl;
     }
-    else if (resource == "wheat")
+    else if (resource == "Wheat")
     {
         wheat += amount;
+        std::cout << this->getName() << " collects " << amount << " wheat." << std::endl;
     }
-    else if (resource == "ore")
+    else if (resource == "Ore")
     {
         ore += amount;
+        std::cout << this->getName() << " collects " << amount << " ore." << std::endl;
     }
-    else if (resource == "sheep")
+    else if (resource == "Sheep")
     {
         sheep += amount;
+        std::cout << this->getName() << " collects " << amount << " sheep." << std::endl;
     }
 }
+
+
+
 
 bool Player::subtractResource(const std::string &resource, int amount)
 {
@@ -83,6 +96,7 @@ bool Player::subtractResource(const std::string &resource, int amount)
     {
         wood -= amount;
         return true;
+        
     }
     else if (resource == "bricks" && bricks >= amount)
     {
@@ -153,7 +167,7 @@ int Player::getTotalResourceCards() const
     return wood + bricks + wheat + ore + sheep;
 }
 
-void Player::discardHalfResources(Deck &deck)
+void Player::discardHalfResources()
 {
     int totalResources = getTotalResourceCards();
     int cardsToDiscard = totalResources / 2;
@@ -246,7 +260,7 @@ void Player::placeSettlement(int plot1Index, int plot2Index, int plot3Index, Boa
 
     numSettlements++;
     victoryPoints++;
-
+    std::cout << name << " placed a settlement at plots " << plot1Index << ", " << plot2Index << ", " << plot3Index << "." << std::endl;
     // Give resources from adjacent plots for the first two settlements
     if (numCities + numSettlements <= 2)
     {
@@ -256,6 +270,8 @@ void Player::placeSettlement(int plot1Index, int plot2Index, int plot3Index, Boa
         }
     }
 }
+
+
 
 void Player::buildCity(int plot1Index, int plot2Index, int plot3Index, Board &board)
 {
@@ -303,14 +319,22 @@ void Player::buildCity(int plot1Index, int plot2Index, int plot3Index, Board &bo
 
 bool Player::placeRoad(int start, int end, Player &p1, Player &p2, Player &p3)
 {
-    if (!hasEnoughResourcesForRoad())
+    // If the player has fewer than 2 roads, they can place the road for free
+    if (myRoads.size() >= 2)
     {
-        std::cout << "Not enough resources to place a road." << std::endl;
-        return false;
+        if (!hasEnoughResourcesForRoad())
+        {
+            std::cout << "Not enough resources to place a road." << std::endl;
+            return false;
+        }
+
+        subtractResource("wood", 1);
+        subtractResource("bricks", 1);
     }
 
     Road road(start, end, name);
     std::vector<Player *> players = {&p1, &p2, &p3};
+
     // Check if the road already exists for any player
     for (const auto &player : players)
     {
@@ -322,15 +346,14 @@ bool Player::placeRoad(int start, int end, Player &p1, Player &p2, Player &p3)
     }
 
     myRoads.insert(road);
-    subtractResource("wood", 1);
-    subtractResource("bricks", 1);
     return true;
 }
 
-void Player::trade(Player &other, const std::string &giveResource, const std::string &takeResource, int giveAmount, int takeAmount)
-{
-    // Implementation for trading resources
-}
+
+// void Player::trade(Player &other, const std::string &giveResource, const std::string &takeResource, int giveAmount, int takeAmount)
+// {
+//     // Implementation for trading resources
+// }
 
 void Player::buyDevelopmentCard(Deck &deck)
 {
