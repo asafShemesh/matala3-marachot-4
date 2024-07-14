@@ -1,8 +1,10 @@
+// asaf0604@gmail.com 325362457
 #pragma once
 #include <vector>
 #include <string>
 
-class Deck {
+class Deck
+{
 public:
     Deck();
     std::string drawCard();

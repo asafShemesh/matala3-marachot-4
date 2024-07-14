@@ -1,3 +1,4 @@
+// asaf0604@gmail.com 325362457
 #ifndef PLOT_HPP
 #define PLOT_HPP
 
@@ -5,21 +6,22 @@
 #include <vector>
 #include <memory>
 
-class Plot {
+class Plot
+{
 public:
     Plot(const std::string &type, int number);
 
     std::string getType() const;
-    void setType(const std::string& type);
+    void setType(const std::string &type);
 
     int getNumber() const;
     void setNumber(int number);
 
     std::vector<std::shared_ptr<Plot>> getNeighbors() const;
-    void addNeighbor(const std::shared_ptr<Plot>& neighbor);
+    void addNeighbor(const std::shared_ptr<Plot> &neighbor);
 
     void setVertices(const std::vector<int> &vertices);
-    const std::vector<int>& getVertices() const;
+    const std::vector<int> &getVertices() const;
 
 private:
     std::string type;
@@ -28,4 +30,4 @@ private:
     std::vector<int> vertices;
 };
 
-#endif // PLOT_HPP
+#endif

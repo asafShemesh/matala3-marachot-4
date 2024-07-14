@@ -1,3 +1,4 @@
+// asaf0604@gmail.com 325362457
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include "player.hpp"
@@ -8,7 +9,8 @@
 #include "Road.hpp"
 #include "Plot.hpp"
 
-TEST_CASE("Player Initialization") {
+TEST_CASE("Player Initialization")
+{
     Player p("Amit");
     CHECK(p.getName() == "Amit");
     CHECK(p.getVictoryPoints() == 0);
@@ -16,7 +18,8 @@ TEST_CASE("Player Initialization") {
     CHECK(p.getResourceAmount("bricks") == 0);
 }
 
-TEST_CASE("Game Initialization") {
+TEST_CASE("Game Initialization")
+{
     Player p1("Amit");
     Player p2("Yossi");
     Player p3("Dana");
@@ -31,19 +34,21 @@ TEST_CASE("Game Initialization") {
     CHECK(&catan.get_turn() == &p3);
 }
 
-TEST_CASE("Player Actions") {
+TEST_CASE("Player Actions")
+{
     Player p1("Amit");
     Player p2("Yossi");
     Player p3("Dana");
     CatanGame catan(p1, p2, p3);
-    Board& board = catan.getBoard();
+    Board &board = catan.getBoard();
 
-    SUBCASE("Placing Settlements and Roads") {
+    SUBCASE("Placing Settlements and Roads")
+    {
         p1.placeSettlement(10, board, catan);
         CHECK(p1.getVictoryPoints() == 1);
 
         p1.placeRoad(10, 11, board, p1, p2, p3, catan);
-        CHECK(p1.getResourceAmount("wood") == 0); // Assuming the player has enough resources initially
+        CHECK(p1.getResourceAmount("wood") == 0);
         CHECK(p1.getResourceAmount("bricks") == 0);
 
         p1.placeSettlement(12, board, catan);
@@ -55,7 +60,8 @@ TEST_CASE("Player Actions") {
     }
 }
 
-TEST_CASE("Trading") {
+TEST_CASE("Trading")
+{
     Player p1("Amit");
     Player p2("Yossi");
     Player p3("Dana");
@@ -71,7 +77,8 @@ TEST_CASE("Trading") {
     CHECK(p2.getResourceAmount("bricks") == 0);
 }
 
-TEST_CASE("Development Cards") {
+TEST_CASE("Development Cards")
+{
     Player p1("Amit");
     Player p2("Yossi");
     Player p3("Dana");
@@ -85,17 +92,16 @@ TEST_CASE("Development Cards") {
     CHECK_NOTHROW(p1.buyDevelopmentCard(deck, catan));
 
     p1.useDevelopmentCard(DevCardType::Knight, p1, p2, p3, catan);
-    CHECK(p1.getVictoryPoints() == 0); // Assuming knight doesn't directly add points
-    // Uncomment the following line if you add a getter for knightCount
-    // CHECK(p1.getKnightCount() == 1);
+    CHECK(p1.getVictoryPoints() == 0);
 }
 
-TEST_CASE("Building Cities") {
+TEST_CASE("Building Cities")
+{
     Player p1("Amit");
     Player p2("Yossi");
     Player p3("Dana");
     CatanGame catan(p1, p2, p3);
-    Board& board = catan.getBoard();
+    Board &board = catan.getBoard();
 
     p1.addResource("wheat", 2);
     p1.addResource("ore", 3);
@@ -107,7 +113,8 @@ TEST_CASE("Building Cities") {
     CHECK(p1.getVictoryPoints() == 2);
 }
 
-TEST_CASE("Advanced Trading and Resource Management") {
+TEST_CASE("Advanced Trading and Resource Management")
+{
     Player p1("Amit");
     Player p2("Yossi");
     Player p3("Dana");
@@ -131,7 +138,8 @@ TEST_CASE("Advanced Trading and Resource Management") {
     CHECK(p1.getVictoryPoints() == 1);
 }
 
-TEST_CASE("Using Multiple Development Cards") {
+TEST_CASE("Using Multiple Development Cards")
+{
     Player p1("Amit");
     Player p2("Yossi");
     Player p3("Dana");
@@ -148,7 +156,5 @@ TEST_CASE("Using Multiple Development Cards") {
     p1.useDevelopmentCard(DevCardType::Knight, p1, p2, p3, catan);
     p1.useDevelopmentCard(DevCardType::YearOfPlenty, p1, p2, p3, catan);
 
-    CHECK(p1.getVictoryPoints() == 0); // Assuming knight doesn't directly add points
-    // Uncomment the following line if you add a getter for knightCount
-    // CHECK(p1.getKnightCount() == 1);
+    CHECK(p1.getVictoryPoints() == 0);
 }

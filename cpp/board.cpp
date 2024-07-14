@@ -1,12 +1,15 @@
+// asaf0604@gmail.com 325362457
 #include "board.hpp"
 
 constexpr int Board::NUM_VERTICES;
 
-Board::Board() {
+Board::Board()
+{
     createBoard();
 }
 
-void Board::createBoard() {
+void Board::createBoard()
+{
     plots = {
         std::make_shared<Plot>("Sheep", 5), std::make_shared<Plot>("Ore", 3),
         std::make_shared<Plot>("Wheat", 3), std::make_shared<Plot>("Wood", 8),
@@ -17,10 +20,9 @@ void Board::createBoard() {
         std::make_shared<Plot>("Wood", 6), std::make_shared<Plot>("Wheat", 11),
         std::make_shared<Plot>("Sheep", 9), std::make_shared<Plot>("Brick", 12),
         std::make_shared<Plot>("Brick", 11), std::make_shared<Plot>("Wood", 6),
-        std::make_shared<Plot>("Ore", 10)
-    };
+        std::make_shared<Plot>("Ore", 10)};
 
-    houses.fill(nullptr);  // Initialize the houses array with nullptr
+    houses.fill(nullptr); // Initialize the houses array with nullptr
 
     setNeighbors();
 
@@ -46,7 +48,8 @@ void Board::createBoard() {
     plots[18]->setVertices({43, 44, 45, 53, 52, 51});
 }
 
-void Board::setNeighbors() {
+void Board::setNeighbors()
+{
     // Setting up neighbors based on the specific Catan layout in the image
     plots[0]->addNeighbor(plots[1]);
     plots[0]->addNeighbor(plots[3]);
@@ -152,23 +155,27 @@ void Board::setNeighbors() {
     plots[18]->addNeighbor(plots[17]);
 }
 
-const std::array<std::shared_ptr<Plot>, 19>& Board::getPlots() const {
+const std::array<std::shared_ptr<Plot>, 19> &Board::getPlots() const
+{
     return plots;
 }
 
-const std::array<House*, Board::NUM_VERTICES>& Board::getHouses() const {
+const std::array<House *, Board::NUM_VERTICES> &Board::getHouses() const
+{
     return houses;
 }
 
-std::array<House*, Board::NUM_VERTICES>& Board::getMutableHouses() {
+std::array<House *, Board::NUM_VERTICES> &Board::getMutableHouses()
+{
     return houses;
 }
 
-std::array<std::shared_ptr<Plot>, 19>& Board::getMutablePlots() {
+std::array<std::shared_ptr<Plot>, 19> &Board::getMutablePlots()
+{
     return plots;
 }
 
-void Board::addHouse(std::unique_ptr<House> house) {
+void Board::addHouse(std::unique_ptr<House> house)
+{
     houseOwnership.push_back(std::move(house));
-
 }

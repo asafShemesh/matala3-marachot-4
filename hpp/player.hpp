@@ -1,3 +1,4 @@
+// asaf0604@gmail.com 325362457
 #pragma once
 #include <string>
 #include <set>
@@ -10,36 +11,37 @@
 #include "catan.hpp"
 #include "board.hpp"
 
-class DevelopmentCard; // Forward declaration
+class DevelopmentCard;
 class Deck;
 class CatanGame;
 
-class Player {
+class Player
+{
 public:
-    Player(const std::string& name);
+    Player(const std::string &name);
 
-    void addResource(const std::string& resource, int amount);
-    bool subtractResource(const std::string& resource, int amount);
+    void addResource(const std::string &resource, int amount);
+    bool subtractResource(const std::string &resource, int amount);
 
-    void buildCity(int vertex, Board& board, CatanGame &catan); // Update signature
-    bool placeRoad(int start, int end, Board& board, Player &p1, Player &p2, Player &p3, CatanGame &catan); // Update signature
-    void rollDice(const Board& board, Player &p1, Player &p2, Player &p3, CatanGame &catan); // Update signature
-    void placeSettlement(int vertex, Board &board, CatanGame &catan); // Update signature
+    void buildCity(int vertex, Board &board, CatanGame &catan);
+    bool placeRoad(int start, int end, Board &board, Player &p1, Player &p2, Player &p3, CatanGame &catan);
+    void rollDice(const Board &board, Player &p1, Player &p2, Player &p3, CatanGame &catan);
+    void placeSettlement(int vertex, Board &board, CatanGame &catan);
     std::vector<int> getVerticesWithDistanceOne(int sourceVertex, const Board &board) const;
 
     void printPoints() const;
     int getVictoryPoints() const;
     std::string getName() const;
-    void buyDevelopmentCard(Deck& deck, CatanGame &catan); // Update signature
-    void useDevelopmentCard(DevCardType cardType, Player& p1, Player& p2, Player& p3, CatanGame &catan); // Update signature
-    bool offerTrade(Player& otherPlayer, const std::string& giveResource, int giveAmount, const std::string& receiveResource, int receiveAmount, CatanGame &catan); // New method
+    void buyDevelopmentCard(Deck &deck, CatanGame &catan);
+    void useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Player &p3, CatanGame &catan);
+    bool offerTrade(Player &otherPlayer, const std::string &giveResource, int giveAmount, const std::string &receiveResource, int receiveAmount, CatanGame &catan);
 
-    int getResourceAmount(const std::string& resource) const; // Make public
-    bool hasEnoughResources() const; // Make public
-    int getKnightCount() const; 
+    int getResourceAmount(const std::string &resource) const;
+    bool hasEnoughResources() const;
+    int getKnightCount() const;
 
 private:
-    bool isPlayerTurn(const CatanGame &catan) const; // New helper method
+    bool isPlayerTurn(const CatanGame &catan) const;
     int roll();
     std::string name;
     int wood;
@@ -52,16 +54,14 @@ private:
     int numSettlements;
     int numCities;
     int knightCount;
-    
-    
 
     std::set<Road> myRoads;
     std::vector<std::unique_ptr<DevelopmentCard>> devCards;
 
-    bool hasEnoughResourcesForRoad() const; // New method to check road resources
+    bool hasEnoughResourcesForRoad() const;
     void deductResources();
-    void addDevelopmentCard(const std::string& cardType);
+    void addDevelopmentCard(const std::string &cardType);
 
-    int getTotalResourceCards() const; // New method to get total resource cards
-    void discardHalfResources(); // New method to discard half resources
+    int getTotalResourceCards() const;
+    void discardHalfResources();
 };

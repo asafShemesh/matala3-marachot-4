@@ -1,3 +1,4 @@
+#asaf0604@gmail.com 325362457
 # Compiler and flags
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -fPIC -Ihpp `pkg-config --cflags Qt5Widgets`

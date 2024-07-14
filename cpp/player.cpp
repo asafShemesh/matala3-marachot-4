@@ -1,3 +1,4 @@
+// asaf0604@gmail.com 325362457
 #include "player.hpp"
 #include "board.hpp"
 #include "DevelopmentCard.hpp"
@@ -13,13 +14,15 @@ int Player::roll()
     return (std::rand() % 6 + 1) + (std::rand() % 6 + 1);
 }
 
-bool Player::isPlayerTurn(const CatanGame &catan) const {
+bool Player::isPlayerTurn(const CatanGame &catan) const
+{
     return &catan.get_turn() == this;
 }
 
 void Player::rollDice(const Board &board, Player &p1, Player &p2, Player &p3, CatanGame &catan)
 {
-    if (!isPlayerTurn(catan)) {
+    if (!isPlayerTurn(catan))
+    {
         std::cerr << "It's not " << getName() << "'s turn." << std::endl;
         return;
     }
@@ -40,14 +43,14 @@ void Player::rollDice(const Board &board, Player &p1, Player &p2, Player &p3, Ca
                 player->discardHalfResources();
             }
         }
-        return; // No resource collection happens on a roll of 7
+        return;
     }
 
     // Each player collects resources based on the dice roll
     std::unordered_set<std::shared_ptr<Plot>> collectedPlots;
     for (Player *player : players)
     {
-        const auto &houses = board.getHouses(); // Access const houses
+        const auto &houses = board.getHouses();
         for (const auto &house : houses)
         {
             if (house && house->getOwner() == player->getName())
@@ -58,7 +61,7 @@ void Player::rollDice(const Board &board, Player &p1, Player &p2, Player &p3, Ca
                     {
                         int amount = (house->getType() == HouseType::Settlement) ? 1 : 2;
                         player->addResource(plot->getType(), amount);
-                        collectedPlots.insert(plot); // Mark the plot as collected
+                        collectedPlots.insert(plot);
                     }
                 }
             }
@@ -222,8 +225,10 @@ std::string Player::getName() const
     return name;
 }
 
-void Player::placeSettlement(int vertex, Board &board, CatanGame &catan) {
-    if (!isPlayerTurn(catan)) {
+void Player::placeSettlement(int vertex, Board &board, CatanGame &catan)
+{
+    if (!isPlayerTurn(catan))
+    {
         std::cerr << "It's not " << getName() << "'s turn." << std::endl;
         return;
     }
@@ -232,45 +237,54 @@ void Player::placeSettlement(int vertex, Board &board, CatanGame &catan) {
     auto &plots = board.getMutablePlots();
 
     // Validate the vertex index
-    if (vertex < 0 || vertex >= static_cast<int>(houses.size())) {
+    if (vertex < 0 || vertex >= static_cast<int>(houses.size()))
+    {
         std::cerr << "Error: Vertex index " << vertex << " is out of bounds for houses array." << std::endl;
         return;
     }
 
     // Check if the vertex already has a settlement
-    if (houses[vertex]) {
+    if (houses[vertex])
+    {
         std::cerr << "Cannot place a settlement on vertex " << vertex << " because it already has a house." << std::endl;
         return;
     }
 
     std::vector<int> adjacentVertices = getVerticesWithDistanceOne(vertex, board);
-    for (const auto &v : adjacentVertices) {
-        if (houses[v]) {
+    for (const auto &v : adjacentVertices)
+    {
+        if (houses[v])
+        {
             std::cerr << "Cannot place a settlement adjacent to another settlement on vertex " << v << "." << std::endl;
             return;
         }
     }
 
     // Ensure there's a valid road leading to the settlement location for subsequent settlements
-    if (numCities + numSettlements >= 2) {
+    if (numCities + numSettlements >= 2)
+    {
         bool hasRoad = false;
-        for (const auto &road : myRoads) {
+        for (const auto &road : myRoads)
+        {
             if ((road.getStart() == vertex || road.getEnd() == vertex) &&
                 ((houses[road.getStart()] && houses[road.getStart()]->getOwner() == name) ||
-                 (houses[road.getEnd()] && houses[road.getEnd()]->getOwner() == name))) {
+                 (houses[road.getEnd()] && houses[road.getEnd()]->getOwner() == name)))
+            {
                 hasRoad = true;
                 break;
             }
         }
-        if (!hasRoad) {
+        if (!hasRoad)
+        {
             std::cerr << "Player must have a road leading to the settlement location." << std::endl;
             return;
         }
 
         // Check if the player has enough resources
-        if (!(wood >= 1 && sheep >= 1 && bricks >= 1 && wheat >= 1)) {
+        if (!(wood >= 1 && sheep >= 1 && bricks >= 1 && wheat >= 1))
+        {
             std::cerr << "Not enough resources to place a settlement." << std::endl;
-            return; // Not enough resources to place a settlement
+            return;
         }
         subtractResource("bricks", 1);
         subtractResource("sheep", 1);
@@ -280,20 +294,20 @@ void Player::placeSettlement(int vertex, Board &board, CatanGame &catan) {
 
     // Find the plots adjacent to the vertex
     std::vector<std::shared_ptr<Plot>> adjacentPlots;
-    for (auto &plot : plots) {
-        if (std::find(plot->getVertices().begin(), plot->getVertices().end(), vertex) != plot->getVertices().end()) {
+    for (auto &plot : plots)
+    {
+        if (std::find(plot->getVertices().begin(), plot->getVertices().end(), vertex) != plot->getVertices().end())
+        {
             adjacentPlots.push_back(plot);
         }
     }
 
     // Place the settlement
     auto settlement = std::make_unique<House>(HouseType::Settlement, name, vertex, adjacentPlots);
-    House *settlementPtr = settlement.get(); // Get raw pointer before moving
+    House *settlementPtr = settlement.get();
 
-    // Assign raw pointer to the house array
     houses[vertex] = settlementPtr;
 
-    // Move the unique pointer to the Board's unique pointer array to maintain ownership
     board.addHouse(std::move(settlement));
 
     numSettlements++;
@@ -302,41 +316,50 @@ void Player::placeSettlement(int vertex, Board &board, CatanGame &catan) {
     catan.printWinner();
 
     // Give resources from adjacent plots for the first two settlements
-    if (numCities + numSettlements <= 2) {
-        for (const auto &plot : settlementPtr->getAdjacentPlots()) {
+    if (numCities + numSettlements <= 2)
+    {
+        for (const auto &plot : settlementPtr->getAdjacentPlots())
+        {
             addResource(plot->getType(), 1);
         }
     }
 }
 
-std::vector<int> Player::getVerticesWithDistanceOne(int sourceVertex, const Board &board) const {
+std::vector<int> Player::getVerticesWithDistanceOne(int sourceVertex, const Board &board) const
+{
     std::unordered_set<int> adjacentVertices;
     const auto &plots = board.getPlots();
 
-    for (const auto &plot : plots) {
+    for (const auto &plot : plots)
+    {
         const auto &vertices = plot->getVertices();
         auto it = std::find(vertices.begin(), vertices.end(), sourceVertex);
-        if (it != vertices.end()) {
+        if (it != vertices.end())
+        {
             auto idx = std::distance(vertices.begin(), it);
 
             // Previous vertex (if exists)
-            if (idx > 0) {
+            if (idx > 0)
+            {
                 auto prev_it = std::next(vertices.begin(), idx - 1);
                 adjacentVertices.insert(*prev_it);
             }
 
             // Next vertex (if exists)
-            if (idx < static_cast<long>(vertices.size()) - 1) {
+            if (idx < static_cast<long>(vertices.size()) - 1)
+            {
                 auto next_it = std::next(vertices.begin(), idx + 1);
                 adjacentVertices.insert(*next_it);
             }
 
             // For circular adjacency (if first and last are considered adjacent)
-            if (idx == 0 && vertices.size() > 1) {
+            if (idx == 0 && vertices.size() > 1)
+            {
                 auto last_it = std::prev(vertices.end());
                 adjacentVertices.insert(*last_it);
             }
-            if (idx == static_cast<long>(vertices.size()) - 1 && vertices.size() > 1) {
+            if (idx == static_cast<long>(vertices.size()) - 1 && vertices.size() > 1)
+            {
                 auto first_it = vertices.begin();
                 adjacentVertices.insert(*first_it);
             }
@@ -348,7 +371,8 @@ std::vector<int> Player::getVerticesWithDistanceOne(int sourceVertex, const Boar
 
 bool Player::placeRoad(int startVertex, int endVertex, Board &board, Player &p1, Player &p2, Player &p3, CatanGame &catan)
 {
-    if (!isPlayerTurn(catan)) {
+    if (!isPlayerTurn(catan))
+    {
         std::cerr << "It's not " << getName() << "'s turn." << std::endl;
         return false;
     }
@@ -357,7 +381,8 @@ bool Player::placeRoad(int startVertex, int endVertex, Board &board, Player &p1,
     std::vector<int> startAdjVertices = getVerticesWithDistanceOne(startVertex, board);
     bool isAdjacent = std::find(startAdjVertices.begin(), startAdjVertices.end(), endVertex) != startAdjVertices.end();
 
-    if (!isAdjacent) {
+    if (!isAdjacent)
+    {
         std::cout << "The vertices must be within distance one from each other." << std::endl;
         return false;
     }
@@ -404,11 +429,10 @@ bool Player::placeRoad(int startVertex, int endVertex, Board &board, Player &p1,
     return true;
 }
 
-
-
 void Player::buildCity(int vertex, Board &board, CatanGame &catan)
 {
-    if (!isPlayerTurn(catan)) {
+    if (!isPlayerTurn(catan))
+    {
         std::cerr << "It's not " << getName() << "'s turn." << std::endl;
         return;
     }
@@ -450,7 +474,8 @@ void Player::buildCity(int vertex, Board &board, CatanGame &catan)
 
 void Player::buyDevelopmentCard(Deck &deck, CatanGame &catan)
 {
-    if (!isPlayerTurn(catan)) {
+    if (!isPlayerTurn(catan))
+    {
         std::cerr << "It's not " << getName() << "'s turn." << std::endl;
         return;
     }
@@ -491,7 +516,8 @@ void Player::addDevelopmentCard(const std::string &cardType)
 
 void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Player &p3, CatanGame &catan)
 {
-    if (!isPlayerTurn(catan)) {
+    if (!isPlayerTurn(catan))
+    {
         std::cerr << "It's not " << getName() << "'s turn." << std::endl;
         return;
     }
@@ -563,27 +589,31 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
     }
 }
 
-
-    bool Player::offerTrade(Player& otherPlayer, const std::string& giveResource, int giveAmount, const std::string& receiveResource, int receiveAmount, CatanGame &catan) {
-    if (!isPlayerTurn(catan)) {
+bool Player::offerTrade(Player &otherPlayer, const std::string &giveResource, int giveAmount, const std::string &receiveResource, int receiveAmount, CatanGame &catan)
+{
+    if (!isPlayerTurn(catan))
+    {
         std::cerr << "It's not " << getName() << "'s turn." << std::endl;
         return false;
     }
 
     // Check if the current player has enough resources to offer the trade
-    if (getResourceAmount(giveResource) < giveAmount) {
+    if (getResourceAmount(giveResource) < giveAmount)
+    {
         std::cerr << "You do not have enough " << giveResource << " to offer the trade." << std::endl;
         return false;
     }
 
     // Check if the other player has enough resources to accept the trade
-    if (otherPlayer.getResourceAmount(receiveResource) < receiveAmount) {
+    if (otherPlayer.getResourceAmount(receiveResource) < receiveAmount)
+    {
         std::cerr << otherPlayer.getName() << " does not have enough " << receiveResource << " to accept the trade." << std::endl;
         return false;
     }
 
     // Check if the trade is beneficial for the other player
-    if (giveAmount <= receiveAmount) {
+    if (giveAmount <= receiveAmount)
+    {
         std::cerr << "The trade is not beneficial enough for " << otherPlayer.getName() << "." << std::endl;
         return false;
     }
@@ -599,6 +629,7 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
     return true;
 }
 
-int Player::getKnightCount() const {
+int Player::getKnightCount() const
+{
     return knightCount;
 }
