@@ -9,8 +9,7 @@ OBJ_DIR = obj
 BIN_DIR = bin
 INC_DIR = hpp
 
-# Output 
-# hi
+# Output
 MAIN_TARGET = $(BIN_DIR)/Demo
 
 # Source files
@@ -38,6 +37,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADERS)
 	@echo "Compiling: $< to $@"
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Run the executable
+catan: $(MAIN_TARGET)
+	@echo "Running: $(MAIN_TARGET)"
+	./$(MAIN_TARGET)
+
 # Clean up
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
@@ -52,4 +56,4 @@ print:
 	@echo "Content of INC_DIR (hpp):"
 	@ls $(INC_DIR)
 
-.PHONY: all clean print
+.PHONY: all clean print catan
