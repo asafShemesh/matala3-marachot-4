@@ -68,27 +68,27 @@ void Player::rollDice(const Board &board, Player &p1, Player &p2, Player &p3, Ca
 
 void Player::addResource(const std::string &resource, int amount)
 {
-    if (resource == "Wood")
+    if (resource == "wood")
     {
         wood += amount;
         std::cout << this->getName() << " collects " << amount << " wood." << std::endl;
     }
-    else if (resource == "Brick")
+    else if (resource == "bricks")
     {
         bricks += amount;
         std::cout << this->getName() << " collects " << amount << " bricks." << std::endl;
     }
-    else if (resource == "Wheat")
+    else if (resource == "wheat")
     {
         wheat += amount;
         std::cout << this->getName() << " collects " << amount << " wheat." << std::endl;
     }
-    else if (resource == "Ore")
+    else if (resource == "ore")
     {
         ore += amount;
         std::cout << this->getName() << " collects " << amount << " ore." << std::endl;
     }
-    else if (resource == "Sheep")
+    else if (resource == "sheep")
     {
         sheep += amount;
         std::cout << this->getName() << " collects " << amount << " sheep." << std::endl;
@@ -570,6 +570,12 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
         return false;
     }
 
+    // Check if the current player has enough resources to offer the trade
+    if (getResourceAmount(giveResource) < giveAmount) {
+        std::cerr << "You do not have enough " << giveResource << " to offer the trade." << std::endl;
+        return false;
+    }
+
     // Check if the other player has enough resources to accept the trade
     if (otherPlayer.getResourceAmount(receiveResource) < receiveAmount) {
         std::cerr << otherPlayer.getName() << " does not have enough " << receiveResource << " to accept the trade." << std::endl;
@@ -577,14 +583,8 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
     }
 
     // Check if the trade is beneficial for the other player
-    if (giveAmount >= receiveAmount) {
+    if (giveAmount <= receiveAmount) {
         std::cerr << "The trade is not beneficial enough for " << otherPlayer.getName() << "." << std::endl;
-        return false;
-    }
-
-    // Check if the current player has enough resources to offer the trade
-    if (getResourceAmount(giveResource) < giveAmount) {
-        std::cerr << "You do not have enough " << giveResource << " to offer the trade." << std::endl;
         return false;
     }
 
@@ -599,3 +599,6 @@ void Player::useDevelopmentCard(DevCardType cardType, Player &p1, Player &p2, Pl
     return true;
 }
 
+int Player::getKnightCount() const {
+    return knightCount;
+}

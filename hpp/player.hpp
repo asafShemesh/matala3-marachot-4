@@ -36,6 +36,7 @@ public:
 
     int getResourceAmount(const std::string& resource) const; // Make public
     bool hasEnoughResources() const; // Make public
+    int getKnightCount() const; 
 
 private:
     bool isPlayerTurn(const CatanGame &catan) const; // New helper method
@@ -51,6 +52,8 @@ private:
     int numSettlements;
     int numCities;
     int knightCount;
+    
+    
 
     std::set<Road> myRoads;
     std::vector<std::unique_ptr<DevelopmentCard>> devCards;
